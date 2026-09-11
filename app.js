@@ -496,10 +496,10 @@ class GulooguluApp {
 
 
     // ==================================================
-    // YOU FAILED ANIMATION
+    // PLAYFUL FLOATING SPEECH BUBBLES - YOU FAILED ANIMATION
     // ==================================================
 
-    triggerYouFailedAnimation(reason = 'SUBMIT FAILED!', autoDismissSeconds = 5) {
+    triggerYouFailedAnimation(reason = 'SUBMIT FAILED!', autoDismissSeconds = 6) {
 
         try {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -507,17 +507,17 @@ class GulooguluApp {
             const gain = audioCtx.createGain();
 
             osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(180, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(45, audioCtx.currentTime + 0.9);
+            osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.85);
 
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.9);
+            gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.85);
 
             osc.connect(gain);
             gain.connect(audioCtx.destination);
 
             osc.start();
-            osc.stop(audioCtx.currentTime + 0.9);
+            osc.stop(audioCtx.currentTime + 0.85);
         } catch (e) {
             // Audio Context prevented or unavailable
         }
@@ -538,36 +538,88 @@ class GulooguluApp {
         overlay.className =
             'you-failed-overlay';
 
-        overlay.innerHTML = `
-            <div style="font-size: 80px; margin-bottom: 10px; animation: youFailedPop 0.5s ease;">
-                💥 ❌ 👁️
-            </div>
-
-            <div class="you-failed-title">
-                YOU FAILED!
-            </div>
-
-            <div class="you-failed-sub">
-                ${reason}
-            </div>
-
-            <button class="you-failed-close-btn" onclick="document.getElementById('youFailedOverlay')?.remove()">
-                Acknowledge Failure
+        // Center card with message
+        const centerCard = document.createElement('div');
+        centerCard.className = 'failed-center-card';
+        centerCard.innerHTML = `
+            <div class="failed-card-icon">💥</div>
+            <div class="failed-card-title">YOU FAILED</div>
+            <div class="failed-card-sub">${reason}</div>
+            <button class="failed-card-btn" onclick="document.getElementById('youFailedOverlay')?.remove()">
+                Try Again
             </button>
         `;
+        overlay.appendChild(centerCard);
 
         document.body.appendChild(overlay);
+
+        // Floating speech bubble text variations
+        const bubbleTexts = [
+            'YOU FAILED',
+            'FAILED!',
+            'TRY AGAIN',
+            'NOPE 😭',
+            'YOU FAILED',
+            'FAILED!',
+            'NOPE 😭',
+            'TRY AGAIN',
+            'WRONG! ❌',
+            'BLINK BETTER! 👁️',
+            'OOF 🙈',
+            'NOPE 😭',
+            'YOU FAILED',
+            'FAIL 💥',
+            'TRY AGAIN',
+            'FAILED!',
+            'NOPE 😭',
+            'TRY AGAIN',
+            'YOU FAILED',
+            'WRONG! ❌'
+        ];
+
+        // Spawn multiple floating speech bubbles around the screen
+        const totalBubbles = 24;
+
+        for (let i = 0; i < totalBubbles; i++) {
+            const text = bubbleTexts[i % bubbleTexts.length];
+            const delay = Math.random() * 2.2; // 0s to 2.2s random delay
+            const floatDuration = 3.8 + Math.random() * 2.0; // 3.8s to 5.8s
+            const leftPos = 4 + Math.random() * 86; // 4% to 90% horizontal position
+            const startBottom = 4 + Math.random() * 28; // 4% to 32% start height
+            const rotationDeg = (Math.random() - 0.5) * 36; // -18deg to +18deg
+            const scaleFactor = 0.85 + Math.random() * 0.45; // 0.85x to 1.3x size
+            const fontSize = Math.floor(13 + Math.random() * 6); // 13px to 18px font
+            const tailSide = Math.random() > 0.5 ? 'tail-left' : 'tail-right';
+            const variantClass = `variant-${(i % 4) + 1}`;
+
+            setTimeout(() => {
+                if (!document.body.contains(overlay)) return;
+
+                const bubble = document.createElement('div');
+                bubble.className = `failed-speech-bubble ${tailSide} ${variantClass}`;
+                bubble.textContent = text;
+
+                bubble.style.left = `${leftPos}%`;
+                bubble.style.bottom = `${startBottom}%`;
+                bubble.style.fontSize = `${fontSize}px`;
+                bubble.style.setProperty('--rot', `${rotationDeg}deg`);
+                bubble.style.animationDuration = `${floatDuration}s`;
+                bubble.style.transform = `scale(${scaleFactor})`;
+
+                overlay.appendChild(bubble);
+            }, delay * 1000);
+        }
 
         if (autoDismissSeconds > 0) {
             setTimeout(() => {
                 if (document.body.contains(overlay)) {
-                    overlay.style.transition = 'opacity 0.5s ease';
+                    overlay.style.transition = 'opacity 0.6s ease';
                     overlay.style.opacity = '0';
                     setTimeout(() => {
                         if (document.body.contains(overlay)) {
                             overlay.remove();
                         }
-                    }, 500);
+                    }, 600);
                 }
             }, autoDismissSeconds * 1000);
         }
