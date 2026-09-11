@@ -70,7 +70,7 @@ class GulooguluApp {
         this.mellowContainer = container;
         this.mellowBubbles = [];
 
-        const bubbleCount = 24; // Doubled number of red floating bubbles
+        const bubbleCount = 36; // Increased bubble count
         const viewportW = window.innerWidth;
         const viewportH = window.innerHeight;
 
@@ -82,14 +82,31 @@ class GulooguluApp {
             container.appendChild(bubble);
 
             const rect = bubble.getBoundingClientRect();
-            const w = rect.width || 100;
-            const h = rect.height || 30;
+            const w = rect.width || 120;
+            const h = rect.height || 40;
 
-            const x = Math.floor(Math.random() * Math.max(viewportW - w - 20, 10));
-            const y = Math.floor(Math.random() * Math.max(viewportH - h - 20, 10));
+            let x, y;
 
-            let vx = (Math.random() > 0.5 ? 1 : -1) * (0.4 + Math.random() * 0.5);
-            let vy = (Math.random() > 0.5 ? 1 : -1) * (0.4 + Math.random() * 0.5);
+            // Spawn first 12 bubbles directly in the central region of screen
+            if (i < 12) {
+                const minX = Math.max(0, Math.floor(viewportW * 0.25));
+                const maxX = Math.max(minX + 10, Math.floor(viewportW * 0.75 - w));
+                const minY = Math.max(0, Math.floor(viewportH * 0.25));
+                const maxY = Math.max(minY + 10, Math.floor(viewportH * 0.75 - h));
+
+                x = minX + Math.floor(Math.random() * (maxX - minX));
+                y = minY + Math.floor(Math.random() * (maxY - minY));
+            } else {
+                x = Math.floor(Math.random() * Math.max(viewportW - w - 20, 10));
+                y = Math.floor(Math.random() * Math.max(viewportH - h - 20, 10));
+            }
+
+            // Faster, livelier velocity (1.4 to 2.8 px/frame)
+            let vx = (Math.random() > 0.5 ? 1 : -1) * (1.4 + Math.random() * 1.4);
+            let vy = (Math.random() > 0.5 ? 1 : -1) * (1.4 + Math.random() * 1.4);
+
+            // Apply initial position immediately to eliminate start lag
+            bubble.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
 
             this.mellowBubbles.push({
                 elem: bubble,
@@ -100,7 +117,7 @@ class GulooguluApp {
                 w,
                 h,
                 isBursting: false,
-                burstTimer: Math.floor(120 + Math.random() * 250)
+                burstTimer: Math.floor(90 + Math.random() * 200)
             });
         }
 
@@ -202,9 +219,9 @@ class GulooguluApp {
             if (!this.mellowContainer || !document.body.contains(elem)) return;
             b.x = Math.floor(Math.random() * Math.max(viewportW - b.w - 20, 10));
             b.y = Math.floor(Math.random() * Math.max(viewportH - b.h - 20, 10));
-            b.vx = (Math.random() > 0.5 ? 1 : -1) * (0.4 + Math.random() * 0.5);
-            b.vy = (Math.random() > 0.5 ? 1 : -1) * (0.4 + Math.random() * 0.5);
-            b.burstTimer = Math.floor(220 + Math.random() * 300);
+            b.vx = (Math.random() > 0.5 ? 1 : -1) * (1.4 + Math.random() * 1.4);
+            b.vy = (Math.random() > 0.5 ? 1 : -1) * (1.4 + Math.random() * 1.4);
+            b.burstTimer = Math.floor(180 + Math.random() * 250);
 
             elem.style.transition = 'none';
             elem.style.transform = `translate3d(${Math.round(b.x)}px, ${Math.round(b.y)}px, 0) scale(0.3)`;
