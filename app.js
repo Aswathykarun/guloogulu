@@ -496,6 +496,85 @@ class GulooguluApp {
 
 
     // ==================================================
+    // YOU FAILED ANIMATION
+    // ==================================================
+
+    triggerYouFailedAnimation(reason = 'SUBMIT FAILED!', autoDismissSeconds = 5) {
+
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(45, audioCtx.currentTime + 0.9);
+
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.9);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.9);
+        } catch (e) {
+            // Audio Context prevented or unavailable
+        }
+
+        const existingOverlay =
+            document.getElementById('youFailedOverlay');
+
+        if (existingOverlay) {
+            existingOverlay.remove();
+        }
+
+        const overlay =
+            document.createElement('div');
+
+        overlay.id =
+            'youFailedOverlay';
+
+        overlay.className =
+            'you-failed-overlay';
+
+        overlay.innerHTML = `
+            <div style="font-size: 80px; margin-bottom: 10px; animation: youFailedPop 0.5s ease;">
+                💥 ❌ 👁️
+            </div>
+
+            <div class="you-failed-title">
+                YOU FAILED!
+            </div>
+
+            <div class="you-failed-sub">
+                ${reason}
+            </div>
+
+            <button class="you-failed-close-btn" onclick="document.getElementById('youFailedOverlay')?.remove()">
+                Acknowledge Failure
+            </button>
+        `;
+
+        document.body.appendChild(overlay);
+
+        if (autoDismissSeconds > 0) {
+            setTimeout(() => {
+                if (document.body.contains(overlay)) {
+                    overlay.style.transition = 'opacity 0.5s ease';
+                    overlay.style.opacity = '0';
+                    setTimeout(() => {
+                        if (document.body.contains(overlay)) {
+                            overlay.remove();
+                        }
+                    }, 500);
+                }
+            }, autoDismissSeconds * 1000);
+        }
+    }
+
+
+    // ==================================================
     // SEARCH (Submitting is impossible - Guloogulu is 100% useless)
     // ==================================================
 
@@ -514,6 +593,11 @@ class GulooguluApp {
             this.updateStatus(
                 'Empty search query entered.',
                 'warn'
+            );
+
+            this.triggerYouFailedAnimation(
+                'SEARCH SUBMIT FAILED!\nCannot submit an empty query.',
+                4
             );
 
             return;
@@ -636,6 +720,11 @@ class GulooguluApp {
                     this.updateStatus(
                         'Search failed! Sentence corrupted & permanently useless.',
                         'error'
+                    );
+
+                    this.triggerYouFailedAnimation(
+                        'SEARCH SUBMIT FAILED!\nSentence corrupted & Guloogulu remains 100% useless.',
+                        6
                     );
 
                 }, 3000);
@@ -764,6 +853,11 @@ class GulooguluApp {
         this.updateStatus(
             '⚠️ PUNISHMENT MODE ACTIVATED: 15:00 ⚠️',
             'punish'
+        );
+
+        this.triggerYouFailedAnimation(
+            `PUNISHMENT MODE ACTIVATED!\n${reason}`,
+            7
         );
 
 
