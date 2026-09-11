@@ -101,9 +101,9 @@ class GulooguluApp {
                 y = Math.floor(Math.random() * Math.max(viewportH - h - 20, 10));
             }
 
-            // Faster, livelier velocity (1.4 to 2.8 px/frame)
-            let vx = (Math.random() > 0.5 ? 1 : -1) * (1.4 + Math.random() * 1.4);
-            let vy = (Math.random() > 0.5 ? 1 : -1) * (1.4 + Math.random() * 1.4);
+            // Fast, high-velocity movement (3.2 to 5.5 px/frame)
+            let vx = (Math.random() > 0.5 ? 1 : -1) * (3.2 + Math.random() * 2.3);
+            let vy = (Math.random() > 0.5 ? 1 : -1) * (3.2 + Math.random() * 2.3);
 
             // Apply initial position immediately to eliminate start lag
             bubble.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
@@ -173,7 +173,7 @@ class GulooguluApp {
         b.isBursting = true;
         const elem = b.elem;
 
-        elem.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+        elem.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
         elem.style.transform = `translate3d(${Math.round(b.x)}px, ${Math.round(b.y)}px, 0) scale(1.2)`;
         elem.style.opacity = '0';
 
@@ -219,8 +219,8 @@ class GulooguluApp {
             if (!this.mellowContainer || !document.body.contains(elem)) return;
             b.x = Math.floor(Math.random() * Math.max(viewportW - b.w - 20, 10));
             b.y = Math.floor(Math.random() * Math.max(viewportH - b.h - 20, 10));
-            b.vx = (Math.random() > 0.5 ? 1 : -1) * (1.4 + Math.random() * 1.4);
-            b.vy = (Math.random() > 0.5 ? 1 : -1) * (1.4 + Math.random() * 1.4);
+            b.vx = (Math.random() > 0.5 ? 1 : -1) * (3.2 + Math.random() * 2.3);
+            b.vy = (Math.random() > 0.5 ? 1 : -1) * (3.2 + Math.random() * 2.3);
             b.burstTimer = Math.floor(180 + Math.random() * 250);
 
             elem.style.transition = 'none';
@@ -247,7 +247,13 @@ class GulooguluApp {
 
         const container = document.getElementById('mellowScreensaverContainer');
         if (container) {
-            container.remove();
+            container.style.transition = 'opacity 0.6s ease';
+            container.style.opacity = '0';
+            setTimeout(() => {
+                if (container && container.parentNode) {
+                    container.parentNode.removeChild(container);
+                }
+            }, 600);
         }
 
         this.mellowContainer = null;
