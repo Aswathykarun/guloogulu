@@ -44,88 +44,132 @@ class GulooguluApp {
 
         this.setupCameraAndDetector();
 
-        this.initFifteenSecondTimer();
+        this.initTwentySecondScreensaver();
     }
 
 
     // ==================================================
-    // 15-SECOND FLOATING DVD SCREENSAVER "YOU FAILED"
+    // MELLOW 20-SECOND FLOATING SCREENSAVER
     // ==================================================
 
-    initFifteenSecondTimer() {
+    initTwentySecondScreensaver() {
         setTimeout(() => {
-            this.startFloatingScreensaver();
-        }, 15000);
+            this.startMellowScreensaver();
+        }, 20000);
     }
 
-    startFloatingScreensaver() {
-        if (document.getElementById('dvdScreensaverFailed')) {
+    startMellowScreensaver() {
+        if (document.getElementById('mellowScreensaverContainer')) {
             return;
         }
 
-        const elem = document.createElement('div');
-        elem.id = 'dvdScreensaverFailed';
-        elem.className = 'dvd-screensaver-failed';
-        elem.innerHTML = `<span>👁️</span> <span>YOU FAILED</span>`;
-        document.body.appendChild(elem);
+        const container = document.createElement('div');
+        container.id = 'mellowScreensaverContainer';
+        Object.assign(container.style, {
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100vw',
+            height: '100vh',
+            pointerEvents: 'none',
+            zIndex: '99999',
+            overflow: 'hidden'
+        });
+        document.body.appendChild(container);
 
-        const colors = [
-            { bg: 'linear-gradient(135deg, #ea4335, #ff5252)', shadow: 'rgba(234, 67, 53, 0.5)' },
-            { bg: 'linear-gradient(135deg, #4285f4, #448aff)', shadow: 'rgba(66, 133, 244, 0.5)' },
-            { bg: 'linear-gradient(135deg, #fbbc05, #ffd740)', shadow: 'rgba(251, 188, 5, 0.5)' },
-            { bg: 'linear-gradient(135deg, #34a853, #69f0ae)', shadow: 'rgba(52, 168, 83, 0.5)' },
-            { bg: 'linear-gradient(135deg, #a142f4, #e040fb)', shadow: 'rgba(161, 66, 244, 0.5)' },
-            { bg: 'linear-gradient(135deg, #ff4081, #ff80ab)', shadow: 'rgba(255, 64, 129, 0.5)' }
+        const colorPalettes = [
+            'linear-gradient(135deg, #ea4335, #ff5252)',
+            'linear-gradient(135deg, #4285f4, #448aff)',
+            'linear-gradient(135deg, #fbbc05, #ffd740)',
+            'linear-gradient(135deg, #34a853, #69f0ae)',
+            'linear-gradient(135deg, #a142f4, #e040fb)',
+            'linear-gradient(135deg, #ff4081, #ff80ab)',
+            'linear-gradient(135deg, #e91e63, #ff5252)',
+            'linear-gradient(135deg, #00bcd4, #4dd0e1)'
         ];
-        let colorIdx = 0;
 
-        let x = Math.floor(Math.random() * Math.max(window.innerWidth - 250, 50));
-        let y = Math.floor(Math.random() * Math.max(window.innerHeight - 120, 50));
-        let vx = 1.8;
-        let vy = 1.4;
+        const itemCount = 15;
+        const items = [];
 
-        const updateBounce = () => {
+        const viewportW = window.innerWidth;
+        const viewportH = window.innerHeight;
+
+        for (let i = 0; i < itemCount; i++) {
+            const elem = document.createElement('div');
+            elem.className = 'screensaver-failed-item';
+            elem.textContent = 'YOU FAILED';
+
+            const bg = colorPalettes[i % colorPalettes.length];
+            elem.style.background = bg;
+
+            container.appendChild(elem);
+
             const rect = elem.getBoundingClientRect();
-            const w = rect.width || 200;
-            const h = rect.height || 55;
-            const maxX = window.innerWidth - w;
-            const maxY = window.innerHeight - h;
-            let bounced = false;
+            const w = rect.width || 120;
+            const h = rect.height || 36;
 
-            x += vx;
-            y += vy;
+            const x = Math.floor(Math.random() * Math.max(viewportW - w - 20, 10));
+            const y = Math.floor(Math.random() * Math.max(viewportH - h - 20, 10));
 
-            if (x <= 0) {
-                x = 0;
-                vx = Math.abs(vx);
-                bounced = true;
-            } else if (x >= maxX) {
-                x = maxX;
-                vx = -Math.abs(vx);
-                bounced = true;
-            }
+            let vx = (Math.random() > 0.5 ? 1 : -1) * (0.6 + Math.random() * 0.9);
+            let vy = (Math.random() > 0.5 ? 1 : -1) * (0.6 + Math.random() * 0.9);
 
-            if (y <= 0) {
-                y = 0;
-                vy = Math.abs(vy);
-                bounced = true;
-            } else if (y >= maxY) {
-                y = maxY;
-                vy = -Math.abs(vy);
-                bounced = true;
-            }
+            items.push({
+                elem,
+                x,
+                y,
+                vx,
+                vy,
+                w,
+                h,
+                colorIdx: i % colorPalettes.length
+            });
+        }
 
-            if (bounced) {
-                colorIdx = (colorIdx + 1) % colors.length;
-                elem.style.background = colors[colorIdx].bg;
-                elem.style.boxShadow = `0 10px 30px ${colors[colorIdx].shadow}, 0 0 0 2.5px rgba(255, 255, 255, 0.95)`;
-            }
+        const animate = () => {
+            const currentW = window.innerWidth;
+            const currentH = window.innerHeight;
 
-            elem.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
-            requestAnimationFrame(updateBounce);
+            items.forEach((item) => {
+                item.x += item.vx;
+                item.y += item.vy;
+
+                const maxX = currentW - item.w;
+                const maxY = currentH - item.h;
+                let bounced = false;
+
+                if (item.x <= 0) {
+                    item.x = 0;
+                    item.vx = Math.abs(item.vx);
+                    bounced = true;
+                } else if (item.x >= maxX) {
+                    item.x = maxX;
+                    item.vx = -Math.abs(item.vx);
+                    bounced = true;
+                }
+
+                if (item.y <= 0) {
+                    item.y = 0;
+                    item.vy = Math.abs(item.vy);
+                    bounced = true;
+                } else if (item.y >= maxY) {
+                    item.y = maxY;
+                    item.vy = -Math.abs(item.vy);
+                    bounced = true;
+                }
+
+                if (bounced) {
+                    item.colorIdx = (item.colorIdx + 1) % colorPalettes.length;
+                    item.elem.style.background = colorPalettes[item.colorIdx];
+                }
+
+                item.elem.style.transform = `translate3d(${Math.round(item.x)}px, ${Math.round(item.y)}px, 0)`;
+            });
+
+            requestAnimationFrame(animate);
         };
 
-        requestAnimationFrame(updateBounce);
+        requestAnimationFrame(animate);
     }
 
 
@@ -578,135 +622,7 @@ class GulooguluApp {
     }
 
 
-    // ==================================================
-    // PLAYFUL FLOATING SPEECH BUBBLES - YOU FAILED ANIMATION
-    // ==================================================
 
-    triggerYouFailedAnimation(reason = 'SUBMIT FAILED!', autoDismissSeconds = 6) {
-
-        try {
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(200, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.85);
-
-            gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.85);
-
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.85);
-        } catch (e) {
-            // Audio Context prevented or unavailable
-        }
-
-        const existingOverlay =
-            document.getElementById('youFailedOverlay');
-
-        if (existingOverlay) {
-            existingOverlay.remove();
-        }
-
-        const overlay =
-            document.createElement('div');
-
-        overlay.id =
-            'youFailedOverlay';
-
-        overlay.className =
-            'you-failed-overlay';
-
-        // Center card with message
-        const centerCard = document.createElement('div');
-        centerCard.className = 'failed-center-card';
-        centerCard.innerHTML = `
-            <div class="failed-card-icon">💥</div>
-            <div class="failed-card-title">YOU FAILED</div>
-            <div class="failed-card-sub">${reason}</div>
-            <button class="failed-card-btn" onclick="document.getElementById('youFailedOverlay')?.remove()">
-                Try Again
-            </button>
-        `;
-        overlay.appendChild(centerCard);
-
-        document.body.appendChild(overlay);
-
-        // Floating speech bubble text variations
-        const bubbleTexts = [
-            'YOU FAILED',
-            'FAILED!',
-            'TRY AGAIN',
-            'NOPE 😭',
-            'YOU FAILED',
-            'FAILED!',
-            'NOPE 😭',
-            'TRY AGAIN',
-            'WRONG! ❌',
-            'BLINK BETTER! 👁️',
-            'OOF 🙈',
-            'NOPE 😭',
-            'YOU FAILED',
-            'FAIL 💥',
-            'TRY AGAIN',
-            'FAILED!',
-            'NOPE 😭',
-            'TRY AGAIN',
-            'YOU FAILED',
-            'WRONG! ❌'
-        ];
-
-        // Spawn multiple floating speech bubbles around the screen
-        const totalBubbles = 24;
-
-        for (let i = 0; i < totalBubbles; i++) {
-            const text = bubbleTexts[i % bubbleTexts.length];
-            const delay = Math.random() * 2.2; // 0s to 2.2s random delay
-            const floatDuration = 3.8 + Math.random() * 2.0; // 3.8s to 5.8s
-            const leftPos = 4 + Math.random() * 86; // 4% to 90% horizontal position
-            const startBottom = 4 + Math.random() * 28; // 4% to 32% start height
-            const rotationDeg = (Math.random() - 0.5) * 36; // -18deg to +18deg
-            const scaleFactor = 0.85 + Math.random() * 0.45; // 0.85x to 1.3x size
-            const fontSize = Math.floor(13 + Math.random() * 6); // 13px to 18px font
-            const tailSide = Math.random() > 0.5 ? 'tail-left' : 'tail-right';
-            const variantClass = `variant-${(i % 4) + 1}`;
-
-            setTimeout(() => {
-                if (!document.body.contains(overlay)) return;
-
-                const bubble = document.createElement('div');
-                bubble.className = `failed-speech-bubble ${tailSide} ${variantClass}`;
-                bubble.textContent = text;
-
-                bubble.style.left = `${leftPos}%`;
-                bubble.style.bottom = `${startBottom}%`;
-                bubble.style.fontSize = `${fontSize}px`;
-                bubble.style.setProperty('--rot', `${rotationDeg}deg`);
-                bubble.style.animationDuration = `${floatDuration}s`;
-                bubble.style.transform = `scale(${scaleFactor})`;
-
-                overlay.appendChild(bubble);
-            }, delay * 1000);
-        }
-
-        if (autoDismissSeconds > 0) {
-            setTimeout(() => {
-                if (document.body.contains(overlay)) {
-                    overlay.style.transition = 'opacity 0.6s ease';
-                    overlay.style.opacity = '0';
-                    setTimeout(() => {
-                        if (document.body.contains(overlay)) {
-                            overlay.remove();
-                        }
-                    }, 600);
-                }
-            }, autoDismissSeconds * 1000);
-        }
-    }
 
 
     // ==================================================
@@ -728,11 +644,6 @@ class GulooguluApp {
             this.updateStatus(
                 'Empty search query entered.',
                 'warn'
-            );
-
-            this.triggerYouFailedAnimation(
-                'SEARCH SUBMIT FAILED!\nCannot submit an empty query.',
-                4
             );
 
             return;
@@ -855,11 +766,6 @@ class GulooguluApp {
                     this.updateStatus(
                         'Search failed! Sentence corrupted & permanently useless.',
                         'error'
-                    );
-
-                    this.triggerYouFailedAnimation(
-                        'SEARCH SUBMIT FAILED!\nSentence corrupted & Guloogulu remains 100% useless.',
-                        6
                     );
 
                 }, 3000);
@@ -988,11 +894,6 @@ class GulooguluApp {
         this.updateStatus(
             '⚠️ PUNISHMENT MODE ACTIVATED: 15:00 ⚠️',
             'punish'
-        );
-
-        this.triggerYouFailedAnimation(
-            `PUNISHMENT MODE ACTIVATED!\n${reason}`,
-            7
         );
 
 
