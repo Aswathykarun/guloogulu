@@ -54,11 +54,11 @@ class GulooguluApp {
 
     initTwentySecondScreensaver() {
         setTimeout(() => {
-            this.startMellowScreensaver();
+            this.startMellowScreensaver(6000);
         }, 20000);
     }
 
-    startMellowScreensaver() {
+    startMellowScreensaver(durationMs = 6000) {
         if (document.getElementById('mellowScreensaverContainer')) {
             return;
         }
@@ -73,21 +73,12 @@ class GulooguluApp {
             height: '100vh',
             pointerEvents: 'none',
             zIndex: '99999',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            transition: 'opacity 0.6s ease'
         });
         document.body.appendChild(container);
 
-        const colorPalettes = [
-            'linear-gradient(135deg, #ea4335, #ff5252)',
-            'linear-gradient(135deg, #4285f4, #448aff)',
-            'linear-gradient(135deg, #fbbc05, #ffd740)',
-            'linear-gradient(135deg, #34a853, #69f0ae)',
-            'linear-gradient(135deg, #a142f4, #e040fb)',
-            'linear-gradient(135deg, #ff4081, #ff80ab)',
-            'linear-gradient(135deg, #e91e63, #ff5252)',
-            'linear-gradient(135deg, #00bcd4, #4dd0e1)'
-        ];
-
+        const redGradient = 'linear-gradient(135deg, #d93025, #ea4335)';
         const itemCount = 15;
         const items = [];
 
@@ -98,9 +89,7 @@ class GulooguluApp {
             const elem = document.createElement('div');
             elem.className = 'screensaver-failed-item';
             elem.textContent = 'YOU FAILED';
-
-            const bg = colorPalettes[i % colorPalettes.length];
-            elem.style.background = bg;
+            elem.style.background = redGradient;
 
             container.appendChild(elem);
 
@@ -114,19 +103,14 @@ class GulooguluApp {
             let vx = (Math.random() > 0.5 ? 1 : -1) * (0.6 + Math.random() * 0.9);
             let vy = (Math.random() > 0.5 ? 1 : -1) * (0.6 + Math.random() * 0.9);
 
-            items.push({
-                elem,
-                x,
-                y,
-                vx,
-                vy,
-                w,
-                h,
-                colorIdx: i % colorPalettes.length
-            });
+            items.push({ elem, x, y, vx, vy, w, h });
         }
 
+        let isRunning = true;
+
         const animate = () => {
+            if (!isRunning || !document.body.contains(container)) return;
+
             const currentW = window.innerWidth;
             const currentH = window.innerHeight;
 
@@ -136,31 +120,21 @@ class GulooguluApp {
 
                 const maxX = currentW - item.w;
                 const maxY = currentH - item.h;
-                let bounced = false;
 
                 if (item.x <= 0) {
                     item.x = 0;
                     item.vx = Math.abs(item.vx);
-                    bounced = true;
                 } else if (item.x >= maxX) {
                     item.x = maxX;
                     item.vx = -Math.abs(item.vx);
-                    bounced = true;
                 }
 
                 if (item.y <= 0) {
                     item.y = 0;
                     item.vy = Math.abs(item.vy);
-                    bounced = true;
                 } else if (item.y >= maxY) {
                     item.y = maxY;
                     item.vy = -Math.abs(item.vy);
-                    bounced = true;
-                }
-
-                if (bounced) {
-                    item.colorIdx = (item.colorIdx + 1) % colorPalettes.length;
-                    item.elem.style.background = colorPalettes[item.colorIdx];
                 }
 
                 item.elem.style.transform = `translate3d(${Math.round(item.x)}px, ${Math.round(item.y)}px, 0)`;
@@ -170,6 +144,17 @@ class GulooguluApp {
         };
 
         requestAnimationFrame(animate);
+
+        // Auto remove all floating messages after failure interval ends
+        setTimeout(() => {
+            isRunning = false;
+            container.style.opacity = '0';
+            setTimeout(() => {
+                if (document.body.contains(container)) {
+                    container.remove();
+                }
+            }, 600);
+        }, durationMs);
     }
 
 
