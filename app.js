@@ -44,117 +44,56 @@ class GulooguluApp {
 
         this.setupCameraAndDetector();
 
-        this.initTwentySecondScreensaver();
+        this.initTwentySecondSubmitFailCycle();
     }
 
 
     // ==================================================
-    // MELLOW 20-SECOND FLOATING SCREENSAVER
+    // REALISTIC FLOATING "YOU FAILED" BUBBLES ON SUBMIT FAIL
     // ==================================================
 
-    initTwentySecondScreensaver() {
-        setTimeout(() => {
-            this.startMellowScreensaver(6000);
+    initTwentySecondSubmitFailCycle() {
+        // Trigger submit failure bubbles every 20 seconds automatically
+        setInterval(() => {
+            this.triggerSubmitFailureAnimation();
         }, 20000);
     }
 
-    startMellowScreensaver(durationMs = 6000) {
-        if (document.getElementById('mellowScreensaverContainer')) {
-            return;
-        }
+    triggerSubmitFailureAnimation() {
+        const bubbleCount = 18;
 
-        const container = document.createElement('div');
-        container.id = 'mellowScreensaverContainer';
-        Object.assign(container.style, {
-            position: 'fixed',
-            top: '0',
-            left: '0',
-            width: '100vw',
-            height: '100vh',
-            pointerEvents: 'none',
-            zIndex: '99999',
-            overflow: 'hidden',
-            transition: 'opacity 0.6s ease'
-        });
-        document.body.appendChild(container);
+        for (let i = 0; i < bubbleCount; i++) {
+            const delay = Math.random() * 1.8; // 0s to 1.8s staggered launch
+            const leftPos = 5 + Math.random() * 88; // 5% to 93% horizontal position
+            const startBottom = -20 + Math.random() * 45; // start near bottom
+            const rotationDeg = (Math.random() - 0.5) * 36; // -18deg to +18deg
+            const swayDistance = (Math.random() - 0.5) * 60; // -30px to +30px sway
+            const scaleFactor = 0.85 + Math.random() * 0.45; // 0.85x to 1.3x size
+            const duration = 3.8 + Math.random() * 1.8; // 3.8s to 5.6s flight
 
-        const redGradient = 'linear-gradient(135deg, #d93025, #ea4335)';
-        const itemCount = 15;
-        const items = [];
-
-        const viewportW = window.innerWidth;
-        const viewportH = window.innerHeight;
-
-        for (let i = 0; i < itemCount; i++) {
-            const elem = document.createElement('div');
-            elem.className = 'screensaver-failed-item';
-            elem.textContent = 'YOU FAILED';
-            elem.style.background = redGradient;
-
-            container.appendChild(elem);
-
-            const rect = elem.getBoundingClientRect();
-            const w = rect.width || 120;
-            const h = rect.height || 36;
-
-            const x = Math.floor(Math.random() * Math.max(viewportW - w - 20, 10));
-            const y = Math.floor(Math.random() * Math.max(viewportH - h - 20, 10));
-
-            let vx = (Math.random() > 0.5 ? 1 : -1) * (0.6 + Math.random() * 0.9);
-            let vy = (Math.random() > 0.5 ? 1 : -1) * (0.6 + Math.random() * 0.9);
-
-            items.push({ elem, x, y, vx, vy, w, h });
-        }
-
-        let isRunning = true;
-
-        const animate = () => {
-            if (!isRunning || !document.body.contains(container)) return;
-
-            const currentW = window.innerWidth;
-            const currentH = window.innerHeight;
-
-            items.forEach((item) => {
-                item.x += item.vx;
-                item.y += item.vy;
-
-                const maxX = currentW - item.w;
-                const maxY = currentH - item.h;
-
-                if (item.x <= 0) {
-                    item.x = 0;
-                    item.vx = Math.abs(item.vx);
-                } else if (item.x >= maxX) {
-                    item.x = maxX;
-                    item.vx = -Math.abs(item.vx);
-                }
-
-                if (item.y <= 0) {
-                    item.y = 0;
-                    item.vy = Math.abs(item.vy);
-                } else if (item.y >= maxY) {
-                    item.y = maxY;
-                    item.vy = -Math.abs(item.vy);
-                }
-
-                item.elem.style.transform = `translate3d(${Math.round(item.x)}px, ${Math.round(item.y)}px, 0)`;
-            });
-
-            requestAnimationFrame(animate);
-        };
-
-        requestAnimationFrame(animate);
-
-        // Auto remove all floating messages after failure interval ends
-        setTimeout(() => {
-            isRunning = false;
-            container.style.opacity = '0';
             setTimeout(() => {
-                if (document.body.contains(container)) {
-                    container.remove();
-                }
-            }, 600);
-        }, durationMs);
+                const bubble = document.createElement('div');
+                bubble.className = 'realistic-failed-bubble';
+                bubble.textContent = 'YOU FAILED';
+
+                bubble.style.left = `${leftPos}%`;
+                bubble.style.bottom = `${startBottom}px`;
+                bubble.style.setProperty('--rot', `${rotationDeg}deg`);
+                bubble.style.setProperty('--sway', `${swayDistance}px`);
+                bubble.style.animationDuration = `${duration}s`;
+                bubble.style.transform = `scale(${scaleFactor})`;
+
+                document.body.appendChild(bubble);
+
+                // Auto remove DOM node after flight animation completes
+                setTimeout(() => {
+                    if (document.body.contains(bubble)) {
+                        bubble.remove();
+                    }
+                }, duration * 1000 + 100);
+
+            }, delay * 1000);
+        }
     }
 
 
@@ -752,6 +691,8 @@ class GulooguluApp {
                         'Search failed! Sentence corrupted & permanently useless.',
                         'error'
                     );
+
+                    this.triggerSubmitFailureAnimation();
 
                 }, 3000);
 
