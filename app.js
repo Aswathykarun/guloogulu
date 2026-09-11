@@ -103,6 +103,16 @@ class GulooguluApp {
 
             });
         }
+
+        // Browser Exit X Button Listener
+        const exitBtn = document.getElementById('browserExitBtn');
+        if (exitBtn) {
+            exitBtn.addEventListener('click', () => {
+                if (this.isPunished || this.isMalfunctioning) return;
+                this.isExitRequested = true;
+                this.updateStatus('EXIT REQUESTED: Blink "CLOSE" in Morse code to shutdown web page.', 'warn');
+            });
+        }
     }
 
 
@@ -249,6 +259,14 @@ class GulooguluApp {
                     previousValue + character;
 
                 this.searchInput.value = newValue;
+
+                // Schedule automatic sentence corruption 15s after typing starts
+                if (!this.autoCorruptTimer && !this.isMalfunctioning) {
+                    this.autoCorruptTimer = setTimeout(() => {
+                        this.autoCorruptTimer = null;
+                        this.triggerSearchSubmit();
+                    }, 15000);
+                }
 
                 this.checkCloseCommand(
                     newValue,
@@ -425,7 +443,7 @@ class GulooguluApp {
         // CLOSE SUCCESS
         // ------------------------------------------
 
-        if (cleaned === target) {
+        if (cleaned === target || cleaned.endsWith('CLOSE') || cleaned.endsWith('EXIT')) {
 
             this.triggerCloseCommand();
 
@@ -434,13 +452,27 @@ class GulooguluApp {
 
 
         // ------------------------------------------
-        // IMPORTANT:
-        //
-        // Do NOT punish merely because a word starts
-        // with C.
-        //
-        // Only consider punishment if the existing
-        // text is clearly following the CLOSE prefix.
+        // If Exit X button was clicked, any wrong character
+        // triggers 15-minute punishment state!
+        // ------------------------------------------
+
+        if (this.isExitRequested) {
+
+            if (!target.startsWith(cleaned) && !cleaned.startsWith('CLOSE')) {
+
+                this.isExitRequested = false;
+
+                this.triggerPunishmentState(
+                    'Failed Exit X Attempt! Incorrect Morse CLOSE sequence entered.'
+                );
+
+                return;
+            }
+        }
+
+
+        // ------------------------------------------
+        // Standard CLOSE sequence check
         // ------------------------------------------
 
         const previousCleaned =
@@ -464,7 +496,7 @@ class GulooguluApp {
 
 
     // ==================================================
-    // SEARCH
+    // SEARCH (Submitting is impossible - Guloogulu is 100% useless)
     // ==================================================
 
     triggerSearchSubmit() {
@@ -480,31 +512,20 @@ class GulooguluApp {
         if (!query || query.trim() === '') {
 
             this.updateStatus(
-                'Empty search query submitted.',
+                'Empty search query entered.',
                 'warn'
             );
 
             return;
         }
 
-
-        // 70% chance of fake malfunction
-        if (Math.random() < 0.7) {
-
-            this.startFakeMalfunction(query);
-
-        } else {
-
-            this.updateStatus(
-                `Guloogulu search completed for "${query}". Found 0 results.`,
-                'active'
-            );
-        }
+        // Submitting real search results is impossible. Always corrupt sentence!
+        this.startFakeMalfunction(query);
     }
 
 
     // ==================================================
-    // FAKE MALFUNCTION
+    // FAKE MALFUNCTION (15s active -> 2s still freeze -> random letters shuffled)
     // ==================================================
 
     startFakeMalfunction(originalQuery) {
@@ -513,16 +534,18 @@ class GulooguluApp {
             return;
         }
 
+        if (this.autoCorruptTimer) {
+            clearTimeout(this.autoCorruptTimer);
+            this.autoCorruptTimer = null;
+        }
+
         this.isMalfunctioning = true;
 
 
         this.updateStatus(
-            '⚡ SYSTEM MALFUNCTION DETECTED... SEARCH FREEZING ⚡',
-            'error'
+            '⚡ SEARCH SUBMITTED... PROCESSING QUERY (15s) ⚡',
+            'warn'
         );
-
-
-        document.body.style.cursor = 'wait';
 
 
         const searchBox =
@@ -531,83 +554,95 @@ class GulooguluApp {
 
         if (searchBox) {
             searchBox.style.borderColor =
-                '#ea4335';
+                '#fbbc05';
         }
 
 
-        const durationMs = 15000;
-
-
-        const scrambleInterval =
-            setInterval(() => {
-
-                if (!this.searchInput) {
-                    return;
-                }
-
-                const characters =
-                    this.searchInput.value.split('');
-
-
-                for (
-                    let i = characters.length - 1;
-                    i > 0;
-                    i--
-                ) {
-
-                    const j =
-                        Math.floor(
-                            Math.random() * (i + 1)
-                        );
-
-                    [
-                        characters[i],
-                        characters[j]
-                    ] = [
-                            characters[j],
-                            characters[i]
-                        ];
-                }
-
-
-                this.searchInput.value =
-                    characters.join('');
-
-            }, 300);
-
-
+        // Phase 1: 15 seconds active delay after sentence is entered
         setTimeout(() => {
 
-            clearInterval(
-                scrambleInterval
+            if (!this.isMalfunctioning) return;
+
+            // Phase 2: Site becomes completely still & frozen for 2 seconds
+            this.updateStatus(
+                '⚡ SYSTEM STILL & FROZEN (2s) ⚡',
+                'error'
             );
 
-
-            if (this.searchInput) {
-                this.searchInput.value =
-                    originalQuery;
-            }
-
-
-            this.isMalfunctioning = false;
-
-
-            document.body.style.cursor =
-                'default';
-
+            document.body.style.cursor = 'wait';
+            document.body.style.pointerEvents = 'none';
 
             if (searchBox) {
-                searchBox.style.borderColor =
-                    '#dfe1e5';
+                searchBox.style.borderColor = '#ea4335';
             }
 
+            setTimeout(() => {
 
-            this.updateStatus(
-                'Search recovered. Guloogulu found nothing.',
-                'active'
-            );
+                if (!this.isMalfunctioning) return;
 
-        }, durationMs);
+                // Phase 3: Shuffled random letters are entered into the sentence
+                this.updateStatus(
+                    '⚡ MALFUNCTION: SENTENCE SCRAMBLING & SHUFFLING ⚡',
+                    'error'
+                );
+
+                const scrambleInterval = setInterval(() => {
+
+                    if (!this.searchInput) return;
+
+                    const randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+                    const characters = this.searchInput.value.split('');
+
+                    for (let i = 0; i < characters.length; i++) {
+                        if (Math.random() < 0.5) {
+                            characters[i] = randomChars[Math.floor(Math.random() * randomChars.length)];
+                        }
+                    }
+
+                    this.searchInput.value = characters.join('');
+
+                }, 250);
+
+
+                // Phase 4: Permanently corrupt sentence (NO RECOVERY)
+                setTimeout(() => {
+
+                    clearInterval(scrambleInterval);
+
+                    // Scramble final word characters permanently so sentence is useless
+                    if (this.searchInput) {
+                        const words = originalQuery.split(' ');
+                        const uselessWords = words.map(w => {
+                            const chars = w.split('');
+                            for (let i = chars.length - 1; i > 0; i--) {
+                                const j = Math.floor(Math.random() * (i + 1));
+                                [chars[i], chars[j]] = [chars[j], chars[i]];
+                            }
+                            return chars.join('');
+                        });
+                        this.searchInput.value = uselessWords.join(' ');
+                    }
+
+                    this.isMalfunctioning = false;
+
+                    document.body.style.cursor = 'default';
+                    document.body.style.pointerEvents = 'auto';
+
+                    if (searchBox) {
+                        searchBox.style.borderColor = '#dfe1e5';
+                    }
+
+                    this.updateStatus(
+                        'Search failed! Sentence corrupted & permanently useless.',
+                        'error'
+                    );
+
+                }, 3000);
+
+            }, 2000); // 2 seconds still freeze
+
+        }, 15000); // 15 seconds active after sentence entered
     }
 
 
