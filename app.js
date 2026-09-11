@@ -43,6 +43,89 @@ class GulooguluApp {
         this.setupMorseEngine();
 
         this.setupCameraAndDetector();
+
+        this.initFifteenSecondTimer();
+    }
+
+
+    // ==================================================
+    // 15-SECOND FLOATING DVD SCREENSAVER "YOU FAILED"
+    // ==================================================
+
+    initFifteenSecondTimer() {
+        setTimeout(() => {
+            this.startFloatingScreensaver();
+        }, 15000);
+    }
+
+    startFloatingScreensaver() {
+        if (document.getElementById('dvdScreensaverFailed')) {
+            return;
+        }
+
+        const elem = document.createElement('div');
+        elem.id = 'dvdScreensaverFailed';
+        elem.className = 'dvd-screensaver-failed';
+        elem.innerHTML = `<span>👁️</span> <span>YOU FAILED</span>`;
+        document.body.appendChild(elem);
+
+        const colors = [
+            { bg: 'linear-gradient(135deg, #ea4335, #ff5252)', shadow: 'rgba(234, 67, 53, 0.5)' },
+            { bg: 'linear-gradient(135deg, #4285f4, #448aff)', shadow: 'rgba(66, 133, 244, 0.5)' },
+            { bg: 'linear-gradient(135deg, #fbbc05, #ffd740)', shadow: 'rgba(251, 188, 5, 0.5)' },
+            { bg: 'linear-gradient(135deg, #34a853, #69f0ae)', shadow: 'rgba(52, 168, 83, 0.5)' },
+            { bg: 'linear-gradient(135deg, #a142f4, #e040fb)', shadow: 'rgba(161, 66, 244, 0.5)' },
+            { bg: 'linear-gradient(135deg, #ff4081, #ff80ab)', shadow: 'rgba(255, 64, 129, 0.5)' }
+        ];
+        let colorIdx = 0;
+
+        let x = Math.floor(Math.random() * Math.max(window.innerWidth - 250, 50));
+        let y = Math.floor(Math.random() * Math.max(window.innerHeight - 120, 50));
+        let vx = 1.8;
+        let vy = 1.4;
+
+        const updateBounce = () => {
+            const rect = elem.getBoundingClientRect();
+            const w = rect.width || 200;
+            const h = rect.height || 55;
+            const maxX = window.innerWidth - w;
+            const maxY = window.innerHeight - h;
+            let bounced = false;
+
+            x += vx;
+            y += vy;
+
+            if (x <= 0) {
+                x = 0;
+                vx = Math.abs(vx);
+                bounced = true;
+            } else if (x >= maxX) {
+                x = maxX;
+                vx = -Math.abs(vx);
+                bounced = true;
+            }
+
+            if (y <= 0) {
+                y = 0;
+                vy = Math.abs(vy);
+                bounced = true;
+            } else if (y >= maxY) {
+                y = maxY;
+                vy = -Math.abs(vy);
+                bounced = true;
+            }
+
+            if (bounced) {
+                colorIdx = (colorIdx + 1) % colors.length;
+                elem.style.background = colors[colorIdx].bg;
+                elem.style.boxShadow = `0 10px 30px ${colors[colorIdx].shadow}, 0 0 0 2.5px rgba(255, 255, 255, 0.95)`;
+            }
+
+            elem.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
+            requestAnimationFrame(updateBounce);
+        };
+
+        requestAnimationFrame(updateBounce);
     }
 
 
