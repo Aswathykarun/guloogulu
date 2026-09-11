@@ -70,7 +70,7 @@ class GulooguluApp {
         this.mellowContainer = container;
         this.mellowBubbles = [];
 
-        const bubbleCount = 12; // 10-15 small bubbles
+        const bubbleCount = 24; // Doubled number of red floating bubbles
         const viewportW = window.innerWidth;
         const viewportH = window.innerHeight;
 
