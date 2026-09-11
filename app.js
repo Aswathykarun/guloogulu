@@ -43,57 +43,198 @@ class GulooguluApp {
         this.setupMorseEngine();
 
         this.setupCameraAndDetector();
-
-        this.initTwentySecondSubmitFailCycle();
     }
 
 
     // ==================================================
-    // REALISTIC FLOATING "YOU FAILED" BUBBLES ON SUBMIT FAIL
+    // MELLOW NOSTALGIC SCREENSAVER (LIFECYCLE TIED TO FAILURE STATE)
     // ==================================================
 
-    initTwentySecondSubmitFailCycle() {
-        // Trigger submit failure bubbles every 20 seconds automatically
-        setInterval(() => {
-            this.triggerSubmitFailureAnimation();
-        }, 20000);
-    }
+    startMellowScreensaver() {
+        this.stopMellowScreensaver();
 
-    triggerSubmitFailureAnimation() {
-        const bubbleCount = 18;
+        const container = document.createElement('div');
+        container.id = 'mellowScreensaverContainer';
+        Object.assign(container.style, {
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100vw',
+            height: '100vh',
+            pointerEvents: 'none',
+            zIndex: '99999',
+            overflow: 'hidden'
+        });
+        document.body.appendChild(container);
+
+        this.mellowContainer = container;
+        this.mellowBubbles = [];
+
+        const bubbleCount = 12; // 10-15 small bubbles
+        const viewportW = window.innerWidth;
+        const viewportH = window.innerHeight;
 
         for (let i = 0; i < bubbleCount; i++) {
-            const delay = Math.random() * 1.8; // 0s to 1.8s staggered launch
-            const leftPos = 5 + Math.random() * 88; // 5% to 93% horizontal position
-            const startBottom = -20 + Math.random() * 45; // start near bottom
-            const rotationDeg = (Math.random() - 0.5) * 36; // -18deg to +18deg
-            const swayDistance = (Math.random() - 0.5) * 60; // -30px to +30px sway
-            const scaleFactor = 0.85 + Math.random() * 0.45; // 0.85x to 1.3x size
-            const duration = 3.8 + Math.random() * 1.8; // 3.8s to 5.6s flight
+            const bubble = document.createElement('div');
+            bubble.className = 'mellow-failed-bubble';
+            bubble.textContent = 'YOU FAILED';
 
-            setTimeout(() => {
-                const bubble = document.createElement('div');
-                bubble.className = 'realistic-failed-bubble';
-                bubble.textContent = 'YOU FAILED';
+            container.appendChild(bubble);
 
-                bubble.style.left = `${leftPos}%`;
-                bubble.style.bottom = `${startBottom}px`;
-                bubble.style.setProperty('--rot', `${rotationDeg}deg`);
-                bubble.style.setProperty('--sway', `${swayDistance}px`);
-                bubble.style.animationDuration = `${duration}s`;
-                bubble.style.transform = `scale(${scaleFactor})`;
+            const rect = bubble.getBoundingClientRect();
+            const w = rect.width || 100;
+            const h = rect.height || 30;
 
-                document.body.appendChild(bubble);
+            const x = Math.floor(Math.random() * Math.max(viewportW - w - 20, 10));
+            const y = Math.floor(Math.random() * Math.max(viewportH - h - 20, 10));
 
-                // Auto remove DOM node after flight animation completes
-                setTimeout(() => {
-                    if (document.body.contains(bubble)) {
-                        bubble.remove();
-                    }
-                }, duration * 1000 + 100);
+            let vx = (Math.random() > 0.5 ? 1 : -1) * (0.4 + Math.random() * 0.5);
+            let vy = (Math.random() > 0.5 ? 1 : -1) * (0.4 + Math.random() * 0.5);
 
-            }, delay * 1000);
+            this.mellowBubbles.push({
+                elem: bubble,
+                x,
+                y,
+                vx,
+                vy,
+                w,
+                h,
+                isBursting: false,
+                burstTimer: Math.floor(120 + Math.random() * 250)
+            });
         }
+
+        const updateLoop = () => {
+            if (!this.mellowContainer || !document.body.contains(this.mellowContainer)) {
+                return;
+            }
+
+            const currentW = window.innerWidth;
+            const currentH = window.innerHeight;
+
+            this.mellowBubbles.forEach((b) => {
+                if (b.isBursting) return;
+
+                b.x += b.vx;
+                b.y += b.vy;
+
+                const maxX = currentW - b.w;
+                const maxY = currentH - b.h;
+
+                if (b.x <= 0) {
+                    b.x = 0;
+                    b.vx = Math.abs(b.vx);
+                } else if (b.x >= maxX) {
+                    b.x = maxX;
+                    b.vx = -Math.abs(b.vx);
+                }
+
+                if (b.y <= 0) {
+                    b.y = 0;
+                    b.vy = Math.abs(b.vy);
+                } else if (b.y >= maxY) {
+                    b.y = maxY;
+                    b.vy = -Math.abs(b.vy);
+                }
+
+                b.elem.style.transform = `translate3d(${Math.round(b.x)}px, ${Math.round(b.y)}px, 0)`;
+
+                b.burstTimer--;
+                if (b.burstTimer <= 0) {
+                    this.triggerSubtleBubbleBurst(b, currentW, currentH);
+                }
+            });
+
+            this.mellowAnimId = requestAnimationFrame(updateLoop);
+        };
+
+        this.mellowAnimId = requestAnimationFrame(updateLoop);
+    }
+
+    triggerSubtleBubbleBurst(b, viewportW, viewportH) {
+        if (!this.mellowContainer) return;
+        b.isBursting = true;
+        const elem = b.elem;
+
+        elem.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+        elem.style.transform = `translate3d(${Math.round(b.x)}px, ${Math.round(b.y)}px, 0) scale(1.2)`;
+        elem.style.opacity = '0';
+
+        const burstX = b.x + b.w / 2;
+        const burstY = b.y + b.h / 2;
+
+        for (let p = 0; p < 4; p++) {
+            const pt = document.createElement('div');
+            pt.className = 'mellow-bubble-particle';
+            pt.style.left = `${burstX}px`;
+            pt.style.top = `${burstY}px`;
+            this.mellowContainer.appendChild(pt);
+
+            const angle = (p / 4) * Math.PI * 2;
+            const dist = 15 + Math.random() * 20;
+            const px = Math.cos(angle) * dist;
+            const py = Math.sin(angle) * dist;
+
+            pt.animate([
+                { transform: 'translate(0, 0) scale(1)', opacity: 0.6 },
+                { transform: `translate(${px}px, ${py}px) scale(0)`, opacity: 0 }
+            ], { duration: 600, easing: 'ease-out' });
+
+            setTimeout(() => { if (pt.parentNode) pt.remove(); }, 600);
+        }
+
+        const frag = document.createElement('div');
+        frag.className = 'mellow-text-fragment';
+        frag.textContent = 'YOU FAILED';
+        frag.style.left = `${burstX - 30}px`;
+        frag.style.top = `${burstY}px`;
+        this.mellowContainer.appendChild(frag);
+
+        frag.animate([
+            { transform: 'translate(0, 0) scale(0.9)', opacity: 0.8 },
+            { transform: 'translate(0, 30px) scale(1)', opacity: 0.9, offset: 0.5 },
+            { transform: 'translate(0, 48px) scale(0.6)', opacity: 0 }
+        ], { duration: 1100, easing: 'ease-in-out' });
+
+        setTimeout(() => { if (frag.parentNode) frag.remove(); }, 1100);
+
+        setTimeout(() => {
+            if (!this.mellowContainer || !document.body.contains(elem)) return;
+            b.x = Math.floor(Math.random() * Math.max(viewportW - b.w - 20, 10));
+            b.y = Math.floor(Math.random() * Math.max(viewportH - b.h - 20, 10));
+            b.vx = (Math.random() > 0.5 ? 1 : -1) * (0.4 + Math.random() * 0.5);
+            b.vy = (Math.random() > 0.5 ? 1 : -1) * (0.4 + Math.random() * 0.5);
+            b.burstTimer = Math.floor(220 + Math.random() * 300);
+
+            elem.style.transition = 'none';
+            elem.style.transform = `translate3d(${Math.round(b.x)}px, ${Math.round(b.y)}px, 0) scale(0.3)`;
+            elem.style.opacity = '0';
+
+            requestAnimationFrame(() => {
+                elem.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
+                elem.style.transform = `translate3d(${Math.round(b.x)}px, ${Math.round(b.y)}px, 0) scale(1)`;
+                elem.style.opacity = '1';
+                setTimeout(() => {
+                    elem.style.transition = 'none';
+                    b.isBursting = false;
+                }, 500);
+            });
+        }, 1200);
+    }
+
+    stopMellowScreensaver() {
+        if (this.mellowAnimId) {
+            cancelAnimationFrame(this.mellowAnimId);
+            this.mellowAnimId = null;
+        }
+
+        const container = document.getElementById('mellowScreensaverContainer');
+        if (container) {
+            container.remove();
+        }
+
+        this.mellowContainer = null;
+        this.mellowBubbles = [];
     }
 
 
@@ -594,6 +735,7 @@ class GulooguluApp {
         }
 
         this.isMalfunctioning = true;
+        this.startMellowScreensaver();
 
 
         this.updateStatus(
@@ -683,6 +825,8 @@ class GulooguluApp {
                     document.body.style.cursor = 'default';
                     document.body.style.pointerEvents = 'auto';
 
+                    this.stopMellowScreensaver();
+
                     if (searchBox) {
                         searchBox.style.borderColor = '#dfe1e5';
                     }
@@ -691,8 +835,6 @@ class GulooguluApp {
                         'Search failed! Sentence corrupted & permanently useless.',
                         'error'
                     );
-
-                    this.triggerSubmitFailureAnimation();
 
                 }, 3000);
 
@@ -810,6 +952,7 @@ class GulooguluApp {
 
 
         this.isPunished = true;
+        this.startMellowScreensaver();
 
         this.punishmentSecondsLeft = 900;
 
@@ -1018,6 +1161,7 @@ class GulooguluApp {
                     this.punishmentTimer = null;
 
                     this.isPunished = false;
+                    this.stopMellowScreensaver();
 
 
                     if (overlay.parentNode) {
