@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gul🫪guloo</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #202124;
+    background: #fff;
+}
+
+/* =========================
+   PAGE
+========================= */
+
+.page {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================
+   TOP NAVIGATION
+========================= */
+
+.top-nav {
+    height: 52px;
+    min-height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 25px;
+}
+
+/* LEFT */
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.nav-button {
+    width: 36px;
+    height: 36px;
+
+    border: none;
+    background: transparent;
+
+    border-radius: 50%;
+
+    font-size: 25px;
+    font-weight: 300;
+
+    color: #5f6368;
+
+    cursor: pointer;
+}
+
+.nav-button:hover {
+    background: #f1f3f4;
+}
+
+/* RIGHT */
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+
+    font-size: 13px;
+}
+
+.nav-link {
+    cursor: pointer;
+}
+
+.nav-link:hover {
+    text-decoration: underline;
+}
+
+.profile {
+    width: 32px;
+    height: 32px;
+
+    border-radius: 50%;
+
+    background: #f1f3f4;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 17px;
+
+    cursor: pointer;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.main {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    min-height: 0;
+
+    padding-top: 18px;
+}
+
+/* =========================
+   LOGO
+========================= */
+
+.logo {
+    width: 390px;
+    max-width: 42vw;
+
+    height: auto;
+
+    display: block;
+}
+
+/* =========================
+   SEARCH
+========================= */
+
+.search-area {
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+
+    margin-top: 22px;
+}
+
+.search-box {
+    width: 580px;
+    max-width: 62vw;
+
+    height: 48px;
+
+    border: 1px solid #dfe1e5;
+
+    border-radius: 25px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 17px;
+
+    background: white;
+
+    transition: box-shadow .2s;
+}
+
+.search-box:hover,
+.search-box:focus-within {
+    box-shadow: 0 1px 6px rgba(32,33,36,.18);
+}
+
+.search-icon {
+    font-size: 19px;
+
+    color: #5f6368;
+
+    margin-right: 11px;
+}
+
+.search-input {
+    width: 100%;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    font-size: 16px;
+
+    color: #202124;
+}
+
+.search-input::placeholder {
+    color: #777;
+}
+
+/* =========================
+   SEARCH BUTTONS
+========================= */
+
+.search-buttons {
+    margin-top: 17px;
+
+    display: flex;
+    gap: 10px;
+}
+
+.search-button {
+    border: 1px solid #f8f9fa;
+
+    background: #f8f9fa;
+
+    border-radius: 4px;
+
+    padding: 9px 17px;
+
+    font-size: 13px;
+
+    color: #202124;
+
+    cursor: pointer;
+}
+
+.search-button:hover {
+    border-color: #dadce0;
+
+    box-shadow: 0 1px 1px rgba(0,0,0,.1);
+}
+
+/* =========================
+   CAMERA STATUS
+========================= */
+
+.blink-status {
+    margin-top: 9px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    color: #70757a;
+
+    font-size: 11px;
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #34a853;
+}
+
+/* =========================
+   LOWER CONTENT
+========================= */
+
+.lower-content {
+    width: 88%;
+    max-width: 1250px;
+
+    margin-top: 28px;
+
+    display: grid;
+
+    grid-template-columns: minmax(0, 1fr) 250px;
+
+    gap: 32px;
+
+    min-height: 0;
+}
+
+/* =========================
+   NEWS
+========================= */
+
+.news-section {
+    min-width: 0;
+}
+
+.news-heading {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    height: 38px;
+
+    margin-bottom: 8px;
+}
+
+.breaking-text {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.news-logo {
+    width: 130px;
+    height: auto;
+}
+
+.news-text {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.live {
+    background: #ea4335;
+
+    color: white;
+
+    font-size: 9px;
+
+    font-weight: bold;
+
+    padding: 4px 7px;
+
+    border-radius: 3px;
+
+    margin-left: 3px;
+}
+
+/* NEWS CARDS */
+
+.news-box {
+    width: 100%;
+
+    height: 190px;
+
+    border: 1px solid #dadce0;
+
+    border-radius: 10px;
+
+    padding: 12px;
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 12px;
+
+    overflow: hidden;
+}
+
+.news-card {
+    border: 1px solid #e0e0e0;
+
+    border-radius: 8px;
+
+    overflow: hidden;
+
+    background: #fff;
+
+    min-width: 0;
+}
+
+.news-image {
+    width: 100%;
+    height: 68px;
+
+    object-fit: cover;
+
+    background: #f1f3f4;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 28px;
+}
+
+.news-card-content {
+    padding: 8px 9px;
+}
+
+.source {
+    font-size: 9px;
+
+    color: #70757a;
+
+    margin-bottom: 4px;
+}
+
+.headline {
+    font-size: 12px;
+
+    font-weight: 500;
+
+    line-height: 1.3;
+
+    color: #202124;
+}
+
+.time {
+    margin-top: 6px;
+
+    font-size: 9px;
+
+    color: #80868b;
+}
+
+/* =========================
+   MEME
+========================= */
+
+.meme-section {
+    min-width: 0;
+}
+
+.meme-heading {
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+
+    font-size: 22px;
+
+    font-weight: 600;
+
+    margin-bottom: 8px;
+}
+
+.meme-box {
+    width: 100%;
+
+    height: 190px;
+
+    border: 1px solid #dadce0;
+
+    border-radius: 10px;
+
+    background: #fff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    padding: 18px;
+
+    font-size: 15px;
+
+    line-height: 1.45;
+
+    transition: opacity .3s;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+    height: 42px;
+    min-height: 42px;
+
+    border-top: 1px solid #dadce0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 28px;
+
+    color: #5f6368;
+
+    font-size: 11px;
+}
+
+.footer-left,
+.footer-right {
+    display: flex;
+
+    gap: 22px;
+}
+
+.footer span {
+    cursor: pointer;
+}
+
+.footer span:hover {
+    text-decoration: underline;
+}
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 900px) {
+
+    .logo {
+        width: 330px;
+    }
+
+    .lower-content {
+        width: 92%;
+
+        grid-template-columns: 1fr 220px;
+
+        gap: 20px;
+    }
+
+    .news-box {
+        height: 175px;
+    }
+
+    .meme-box {
+        height: 175px;
+    }
+
+    .news-image {
+        height: 55px;
+    }
+
+    .headline {
+        font-size: 11px;
+    }
+
+}
+
+/* =========================
+   SMALL SCREEN
+========================= */
+
+@media (max-width: 700px) {
+
+    html,
+    body {
+        overflow-y: auto;
+    }
+
+    .page {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .main {
+        padding-bottom: 25px;
+    }
+
+    .lower-content {
+        grid-template-columns: 1fr;
+    }
+
+    .news-box {
+        height: auto;
+        grid-template-columns: 1fr;
+    }
+
+    .news-card {
+        display: flex;
+        height: 90px;
+    }
+
+    .news-image {
+        width: 100px;
+        height: 100%;
+    }
+
+    .meme-box {
+        height: 180px;
+    }
+
+    .footer {
+        height: auto;
+        padding: 15px;
+
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="page">
+
+
+<!-- =========================
+     TOP NAV
+========================= -->
+
+<header class="top-nav">
+
+    <div class="nav-left">
+
+        <button
+            class="nav-button"
+            onclick="history.back()"
+            title="Back">
+            ←
+        </button>
+
+        <button
+            class="nav-button"
+            onclick="history.forward()"
+            title="Forward">
+            →
+        </button>
+
+    </div>
+
+
+    <div class="nav-right">
+
+        <span
+            class="nav-link"
+            onclick="alert('Gul🫪guloo Gmail is currently unavailable.')">
+            Gmail
+        </span>
+
+        <span
+            class="nav-link"
+            onclick="alert('Gul🫪guloo Images is still loading...')">
+            Images
+        </span>
+
+        <div class="profile">
+            🙂
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="main">
+
+
+    <!-- LOGO -->
+
+    <img
+        src="gulugulu-logo.png"
+        class="logo"
+        alt="Gul🫪guloo"
+    >
+
+
+    <!-- SEARCH -->
+
+    <div class="search-area">
+
+        <div class="search-box">
+
+            <span class="search-icon">
+                👁
+            </span>
+
+            <input
+                id="searchInput"
+                class="search-input"
+                type="text"
+                placeholder="Blink to Search"
+                autocomplete="off"
+            >
+
+        </div>
+
+    </div>
+
+
+    <!-- BUTTONS -->
+
+    <div class="search-buttons">
+
+        <button
+            class="search-button"
+            onclick="searchNothing()">
+
+            Gul🫪guloo Search
+
+        </button>
+
+
+        <button
+            class="search-button"
+            onclick="feelingLucky()">
+
+            I'm Feeling Lucky
+
+        </button>
+
+    </div>
+
+
+    <!-- CAMERA STATUS -->
+
+    <div class="blink-status">
+
+        <span
+            id="statusDot"
+            class="status-dot">
+        </span>
+
+        <span id="status">
+            Blink-to-type camera ready
+        </span>
+
+    </div>
+
+
+
+    <!-- =========================
+         LOWER SECTION
+    ========================= -->
+
+    <section class="lower-content">
+
+
+        <!-- =====================
+             NEWS
+        ====================== -->
+
+        <div class="news-section">
+
+            <div class="news-heading">
+
+                <span class="breaking-text">
+                    Breaking
+                </span>
+
+
+                <img
+                    src="gulugulu-logo.png"
+                    class="news-logo"
+                    alt="Gul🫪guloo"
+                >
+
+
+                <span class="news-text">
+                    News
+                </span>
+
+
+                <span class="live">
+                    LIVE
+                </span>
+
+            </div>
+
+
+            <div class="news-box">
+
+
+                <!-- NEWS 1 -->
+
+                <article class="news-card">
+
+                    <div class="news-image">
+                        🐜
+                    </div>
+
+                    <div class="news-card-content">
+
+                        <div class="source">
+                            Gul🫪guloo Daily
+                        </div>
+
+                        <div class="headline">
+                            Local ant loses jetty, blames breeze.
+                        </div>
+
+                        <div class="time">
+                            2 hours ago
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- NEWS 2 -->
+
+                <article class="news-card">
+
+                    <div class="news-image">
+                        💻
+                    </div>
+
+                    <div class="news-card-content">
+
+                        <div class="source">
+                            Tech Today
+                        </div>
+
+                        <div class="headline">
+                            AI takes over homework, students take the credit.
+                        </div>
+
+                        <div class="time">
+                            4 hours ago
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- NEWS 3 -->
+
+                <article class="news-card">
+
+                    <div class="news-image">
+                        🔍
+                    </div>
+
+                    <div class="news-card-content">
+
+                        <div class="source">
+                            Internet Times
+                        </div>
+
+                        <div class="headline">
+                            Gul🫪guloo search engine still finds nothing.
+                        </div>
+
+                        <div class="time">
+                            6 hours ago
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================
+             MEME
+        ====================== -->
+
+        <div class="meme-section">
+
+            <div class="meme-heading">
+                MEME
+            </div>
+
+
+            <div
+                id="memeBox"
+                class="meme-box">
+
+                "AI can write the code now."
+
+                <br><br>
+
+                CS student:
+
+                <br>
+
+                "Finally, I can copy it faster."
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+</main>
+
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer class="footer">
+
+    <div class="footer-left">
+
+        <span>About</span>
+
+        <span>Advertising</span>
+
+        <span>Business</span>
+
+        <span>How Search works</span>
+
+    </div>
+
+
+    <div class="footer-right">
+
+        <span>Privacy</span>
+
+        <span>Terms</span>
+
+        <span>Settings</span>
+
+    </div>
+
+</footer>
+
+
+</div>
+
+
+
+<script type="module" src="app.js"></script>
+<script>
+
+/* =========================
+   SEARCH
+========================= */
+
+const searchInput =
+    document.getElementById("searchInput");
+
+const status =
+    document.getElementById("status");
+
+
+searchInput.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Enter") {
+
+            event.preventDefault();
+
+            status.textContent =
+                "Nothing happened.";
+
+        }
+
+    }
+);
+
+
+
+function searchNothing() {
+
+    status.textContent =
+        "Gul🫪guloo searched the entire internet and found absolutely nothing.";
+
+}
+
+
+
+function feelingLucky() {
+
+    status.textContent =
+        "Congratulations. You found nothing.";
+
+}
+
+
+
+/* =========================
+   MEME ROTATION
+========================= */
+
+const memes = [
+
+    `
+    "I'm taking over humanity."
+    <br><br>
+    CS students:
+    <br>
+    "Can you explain it step-by-step?"
+    `,
+
+    `
+    "AI can write the code now."
+    <br><br>
+    CS student:
+    <br>
+    "Finally, I can copy it faster."
+    `,
+
+    `
+    "Bug fixed successfully."
+    <br><br>
+    17 new bugs have appeared.
+    `,
+
+    `
+    "It works on my machine."
+    <br><br>
+    Famous last words.
+    `,
+
+    `
+    Professor:
+    "This is an easy question."
+    <br><br>
+    The entire class:
+    💀
+    `
+
+];
+
+
+let memeIndex = 0;
+
+
+function changeMeme() {
+
+    const box =
+        document.getElementById("memeBox");
+
+    box.style.opacity = "0";
+
+
+    setTimeout(function() {
+
+        memeIndex++;
+
+        if (memeIndex >= memes.length) {
+            memeIndex = 0;
+        }
+
+        box.innerHTML =
+            memes[memeIndex];
+
+        box.style.opacity = "1";
+
+    }, 300);
+
+}
+
+
+setInterval(changeMeme, 6000);
+
+
+
+/* =========================
+   NEWS ROTATION
+========================= */
+
+const newsSets = [
+
+    [
+        [
+            "🐜",
+            "Gul🫪guloo Daily",
+            "Local ant loses jetty, blames breeze.",
+            "2 hours ago"
+        ],
+
+        [
+            "💻",
+            "Tech Today",
+            "AI takes over homework, students take the credit.",
+            "4 hours ago"
+        ],
+
+        [
+            "🔍",
+            "Internet Times",
+            "Gul🫪guloo search engine still finds nothing.",
+            "6 hours ago"
+        ]
+    ],
+
+    [
+        [
+            "🐛",
+            "Campus News",
+            "Student fixes one bug and accidentally creates seventeen more.",
+            "1 hour ago"
+        ],
+
+        [
+            "👁️",
+            "Science Daily",
+            "Blinking student successfully types the word 'HELLO'.",
+            "3 hours ago"
+        ],
+
+        [
+            "🖥️",
+            "Tech Today",
+            "Computer says everything is working. Nobody believes it.",
+            "5 hours ago"
+        ]
+    ],
+
+    [
+        [
+            "🐜",
+            "World News",
+            "Ant reportedly takes wrong turn and refuses to ask for directions.",
+            "30 min ago"
+        ],
+
+        [
+            "🤖",
+            "AI Weekly",
+            "AI writes assignment. Student takes credit. Professor remains suspicious.",
+            "2 hours ago"
+        ],
+
+        [
+            "🔎",
+            "Gul🫪guloo News",
+            "Search completed successfully. Results remain mysteriously absent.",
+            "5 hours ago"
+        ]
+    ]
+
+];
+
+
+let newsIndex = 0;
+
+
+function updateNews() {
+
+    newsIndex++;
+
+    if (newsIndex >= newsSets.length) {
+        newsIndex = 0;
+    }
+
+
+    const cards =
+        document.querySelectorAll(".news-card");
+
+
+    newsSets[newsIndex].forEach(
+        function(item, index) {
+
+            cards[index].querySelector(".news-image")
+                .textContent = item[0];
+
+            cards[index].querySelector(".source")
+                .textContent = item[1];
+
+            cards[index].querySelector(".headline")
+                .textContent = item[2];
+
+            cards[index].querySelector(".time")
+                .textContent = item[3];
+
+        }
+    );
+
+}
+
+
+setInterval(updateNews, 8000);
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "guloogulu",
+  "version": "1.0.0",
+  "description": "Guloogulu Blink-to-Type Parody Search Engine",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx -y http-server . -p 8080 -c-1"
+  }
+}
