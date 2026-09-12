@@ -475,6 +475,14 @@ class GulooguluApp {
 
                 this.searchInput.value = newValue;
 
+                // Schedule automatic sentence corruption 15s after typing starts
+                if (!this.autoCorruptTimer && !this.isMalfunctioning) {
+                    this.autoCorruptTimer = setTimeout(() => {
+                        this.autoCorruptTimer = null;
+                        this.triggerSearchSubmit();
+                    }, 15000);
+                }
+
                 this.checkCloseCommand(
                     newValue,
                     previousValue
@@ -655,6 +663,49 @@ class GulooguluApp {
             this.triggerCloseCommand();
 
             return;
+        }
+
+
+        // ------------------------------------------
+        // If Exit X button was clicked, any wrong character
+        // triggers 15-minute punishment state!
+        // ------------------------------------------
+
+        if (this.isExitRequested) {
+
+            if (!target.startsWith(cleaned) && !cleaned.startsWith('CLOSE')) {
+
+                this.isExitRequested = false;
+
+                this.triggerPunishmentState(
+                    'Failed Exit X Attempt! Incorrect Morse CLOSE sequence entered.'
+                );
+
+                return;
+            }
+        }
+
+
+        // ------------------------------------------
+        // Standard CLOSE sequence check
+        // ------------------------------------------
+
+        const previousCleaned =
+            previousValue.trim().toUpperCase();
+
+
+        if (
+            previousCleaned.length >= 2 &&
+            previousCleaned.length < target.length &&
+            target.startsWith(previousCleaned)
+        ) {
+
+            if (!target.startsWith(cleaned)) {
+
+                this.triggerPunishmentState(
+                    'Failed CLOSE attempt detected.'
+                );
+            }
         }
     }
 
